@@ -1,90 +1,29 @@
-// import { Image, StyleSheet, Platform } from 'react-native';
-
-// import { HelloWave } from '@/components/HelloWave';
-// import ParallaxScrollView from '@/components/ParallaxScrollView';
-// import { ThemedText } from '@/components/ThemedText';
-// import { ThemedView } from '@/components/ThemedView';
-
-// export default function HomeScreen() {
-//   return (
-//     <ParallaxScrollView
-//       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-//       headerImage={
-//         <Image
-//           source={require('@/assets/images/partial-react-logo.png')}
-//           style={styles.reactLogo}
-//         />
-//       }>
-//       <ThemedView style={styles.titleContainer}>
-//         <ThemedText type="title">Welcome!</ThemedText>
-//         <HelloWave />
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-//         <ThemedText>
-//           Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-//           Press{' '}
-//           <ThemedText type="defaultSemiBold">
-//             {Platform.select({
-//               ios: 'cmd + d',
-//               android: 'cmd + m',
-//               web: 'F12'
-//             })}
-//           </ThemedText>{' '}
-//           to open developer tools.
-//         </ThemedText>
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-//         <ThemedText>
-//           Tap the Explore tab to learn more about what's included in this starter app.
-//         </ThemedText>
-//       </ThemedView>
-//       <ThemedView style={styles.stepContainer}>
-//         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-//         <ThemedText>
-//           When you're ready, run{' '}
-//           <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-//           <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-//           <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-//           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-//         </ThemedText>
-//       </ThemedView>
-//     </ParallaxScrollView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   titleContainer: {
-//     flexDirection: 'row',
-//     alignItems: 'center',
-//     gap: 8,
-//   },
-//   stepContainer: {
-//     gap: 8,
-//     marginBottom: 8,
-//   },
-//   reactLogo: {
-//     height: 178,
-//     width: 290,
-//     bottom: 0,
-//     left: 0,
-//     position: 'absolute',
-//   },
-// });
-
-
-
 import { useState } from 'react';
-import { Button, StyleSheet, TextInput, ScrollView } from 'react-native';
-
+import { Button, StyleSheet, TextInput, ScrollView, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+function capitalizeFirstLetter(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+function formatStatValue(value: any) {
+  if (typeof value === 'boolean') {
+    return value ? 'Yes' : 'No'; // ✅ Show "Yes" or "No" instead of true/false
+  }
+  if (value === null || value === undefined) {
+    return 'N/A'; // Optional: Handle null/undefined
+  }
+  return String(value); // Force everything else to string
+}
+
+
 export default function HomeScreen() {
-  const [stats, setStats] = useState('{"cows": 5, "wheat": 100, "gold": 50}');
+  const [stats, setStats] = useState({ cows: 5, wheat: 100, gold: 50, human: 10, hebicide: false });
   const [philosophy, setPhilosophy] = useState('Organic');
   const [response, setResponse] = useState('');
+  const [options, setOptions] = useState<string[]>([]);
+  const [history, setHistory] = useState<string[]>([]);
 
   async function fetchFarmEvent() {
     try {
@@ -94,32 +33,73 @@ export default function HomeScreen() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          stats: JSON.parse(stats),
+          stats,
+          philosophy,
+          history,
+        }),
+      });
+
+      const data = await res.json();
+      console.log('Full response:', data.reply);
+
+      // Parse Consequence, Event, Options
+      const consequenceMatch = data.reply.match(/Consequence:\s*(.*)/);
+      const eventMatch = data.reply.match(/Event:\s*(.*)/);
+      const option1Match = data.reply.match(/Option 1:\s*(.*)/);
+      const option2Match = data.reply.match(/Option 2:\s*(.*)/);
+
+      const consequence = consequenceMatch ? consequenceMatch[1] : '';
+      const eventText = eventMatch ? eventMatch[1] : '';
+      const option1 = option1Match ? option1Match[1] : '';
+      const option2 = option2Match ? option2Match[1] : '';
+
+      setResponse(`${consequence}\n\n${eventText}`);
+      setOptions([option1, option2]);
+    } catch (error) {
+      console.error('Error fetching from backend:', error);
+      setResponse('Error connecting to backend.');
+      setOptions([]);
+    }
+  }
+
+  async function chooseOption(option: string) {
+    // Save choice to history
+    setHistory(prev => [...prev, option]);
+
+    try {
+      const res = await fetch('http://localhost:3001/evaluate-choice', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          choice: option,
+          stats,
           philosophy,
         }),
       });
 
       const data = await res.json();
-      setResponse(data.reply);
+      console.log('Consequence:', data.consequence);
+      console.log('New Stats:', data.newStats);
+
+      setResponse(`Consequence: ${data.consequence}`);
+      setStats(data.newStats);  // 🔥 Update your stats with Gemini's new version!
+      setOptions([]); // Hide options after picking
+
+      // setTimeout(() => {
+      //   fetchFarmEvent(); // Continue the story with new stats
+      // }, 2000);
+
     } catch (error) {
-      console.error('Error fetching from backend:', error);
-      setResponse('Error connecting to backend.');
+      console.error('Error evaluating choice:', error);
+      setResponse('Error evaluating choice.');
     }
   }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <ThemedText type="title">🌾 Farming Simulator Test</ThemedText>
-
-      <ThemedView style={styles.inputContainer}>
-        <ThemedText>Player Stats (JSON):</ThemedText>
-        <TextInput
-          style={styles.input}
-          value={stats}
-          onChangeText={setStats}
-          multiline
-        />
-      </ThemedView>
 
       <ThemedView style={styles.inputContainer}>
         <ThemedText>Farming Philosophy:</ThemedText>
@@ -130,11 +110,30 @@ export default function HomeScreen() {
         />
       </ThemedView>
 
+      {/* 🌟 Stats Display Here */}
+      <ThemedView style={styles.statsContainer}>
+        <ThemedText type="subtitle">📊 Current Farm Stats:</ThemedText>
+        {Object.entries(stats).map(([key, value]) => (
+          <ThemedText key={key}>
+            {capitalizeFirstLetter(key)}: {formatStatValue(value)}
+          </ThemedText>
+        ))}
+      </ThemedView>
+
       <Button title="Generate Farm Event 🌱" onPress={fetchFarmEvent} />
 
       <ThemedView style={styles.responseContainer}>
         <ThemedText type="subtitle">Generated Event:</ThemedText>
         <ThemedText>{response}</ThemedText>
+
+        {/* Two choice buttons */}
+        {options.length > 0 && (
+          <View style={styles.optionsContainer}>
+            <Button title={options[0]} onPress={() => chooseOption(options[0])} />
+            <View style={{ margin: 10 }} />
+            <Button title={options[1]} onPress={() => chooseOption(options[1])} />
+          </View>
+        )}
       </ThemedView>
     </ScrollView>
   );
@@ -153,13 +152,21 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
     borderRadius: 8,
-    minHeight: 80,
-    textAlignVertical: 'top', // makes text input start at the top
+    minHeight: 40,
+    textAlignVertical: 'top',
+    color: 'white',
   },
   responseContainer: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#333',
     borderRadius: 8,
   },
+  optionsContainer: {
+    marginTop: 20,
+    flexDirection: 'column',
+    gap: 10,
+  },
 });
+
+
