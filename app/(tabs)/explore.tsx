@@ -18,6 +18,28 @@ const choices = [
   }
 ];
 
+// Stats following section
+const [timeLeft, setTimeLeft] = useState(100);
+const [numCows, setNumCows] = useState(5);
+const [wheatField, setWheatField] = useState(200); 
+const [wheatStorage, setWheatStorage] = useState(50);
+const [gold, setGold] = useState(100);
+
+import { Provider as PaperProvider, DefaultTheme } from 'react-native-paper';
+
+const theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    primary: '#4CAF50',
+    background: '#f4f4f4',
+    surface: '#ffffff',
+  },
+  roundness: 12,
+};
+
+
+
 export default function StoryScreen() {
   const [story, setStory] = useState(initialStory);
   const [history, setHistory] = useState([]);
@@ -48,6 +70,7 @@ export default function StoryScreen() {
   };
 
   return (
+    <PaperProvider theme={theme}>
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.story}>{story}</Text>
       {choices.map((choice, idx) => (
@@ -60,6 +83,16 @@ export default function StoryScreen() {
           {choice.text}
         </Button>
       ))}
+
+      <View style={styles.statsContainer}>
+        <Text style={styles.statsTitle}>Inventory Stats:</Text>
+        <Text style={styles.statItem}>⏳ Time Left: {timeLeft}</Text>
+        <Text style={styles.statItem}>🐄 Number of Cows: {numCows}</Text>
+        <Text style={styles.statItem}>🌾 Wheat in Field: {wheatField} kg</Text>
+        <Text style={styles.statItem}>🏚 Wheat in Storage: {wheatStorage} kg</Text>
+        <Text style={styles.statItem}>💰 Gold: {gold}</Text>
+      </View>
+
       <Text style={styles.historyTitle}>Previous Choices:</Text>
       {history.map((entry, index) => (
         <Text key={index} style={styles.historyItem}>
@@ -67,6 +100,7 @@ export default function StoryScreen() {
         </Text>
       ))}
     </ScrollView>
+    </PaperProvider>
   );
 }
 
