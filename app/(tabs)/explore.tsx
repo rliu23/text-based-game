@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
 import { Button } from 'react-native-paper';
 import { router } from 'expo-router';
 
@@ -150,8 +150,19 @@ export default function GameScreen() {
 
       {currentTask === 'menu' && (
         <>
-          {!weedComplete && !harvestComplete && !fertilizeComplete &&<Text style={styles.description}>Choose your next task:</Text>}
+          {!weedComplete && !harvestComplete && !fertilizeComplete &&
+          <>
+            <Text style={styles.description}>
+              You're a farmer in the rural countryside, and every day you wake up and tend to your crops and livestock for 12 hours. 
+              Each action in your day will require a certain amount of time, depending on your choices. 
+            </Text>
+            <Text style={styles.description}>
+              Which task would you like to complete first?
+            </Text>
+            <Text style={styles.description}>Choose your next task:</Text>
+          </>}
 
+          
           {false && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('shopping')}>
             Go to the Market 
           </Button> }
@@ -182,12 +193,21 @@ export default function GameScreen() {
 
       {currentTask === 'weeding' && !taskCompleted && (
         <>
+        <View style={{justifyContent: 'center',
+    alignItems: 'center',}}
+    >
+          <Image
+            source={require('@/assets/gemini-images/weedywheat.jpeg')} // Adjust path based on your file structure
+            style={{ width: 1000, height: 250, marginTop: 10 , }}
+            resizeMode="contain"
+          /></View>
           <Text style={styles.description}>
             Your wheat field is overgrown with weeds.
             {hasHerbicide
               ? '\nWould you like to spray herbicide (1 hour)?'
               : '\nYou can buy herbicide for 10 gold and spray (1 hour), or weed by hand (2 hours).'}
           </Text>
+
 
           {hasHerbicide ? (
             <Button
@@ -224,6 +244,12 @@ export default function GameScreen() {
 
       {currentTask === 'harvest' && !taskCompleted && (
         <>
+        <View style={{justifyContent: 'center', alignItems: 'center',}}>
+          <Image
+            source={require('@/assets/gemini-images/unharvestedwheatfield.jpeg')} // Adjust path based on your file structure
+            style={{ width: 1000, height: 250, marginTop: 10 , }}
+            resizeMode="contain"
+          /></View>
           <Text style={styles.description}>
             Your wheat field is ready to harvest!
           </Text>
@@ -239,6 +265,12 @@ export default function GameScreen() {
 
       {currentTask === 'fertilize' && !taskCompleted && (
         <>
+        <View style={{justifyContent: 'center', alignItems: 'center',}}>
+          <Image
+            source={require('@/assets/gemini-images/harvested wheat field.jpeg')} // Adjust path based on your file structure
+            style={{ width: 1000, height: 250, marginTop: 10 , }}
+            resizeMode="contain"
+          /></View>
           <Text style={styles.description}>
             Your wheat field needs to be fertilized. Would you like to fertilize your wheat field with synthetic fertilizers (1 hour, 10 gold) or collect and use cow manure as fertilizer (3 hours)?
           </Text>
@@ -257,6 +289,12 @@ export default function GameScreen() {
 
       {currentTask === 'cow' && !taskCompleted && (
         <>
+        <View style={{justifyContent: 'center', alignItems: 'center',}}>
+          <Image
+            source={require('@/assets/gemini-images/hungrycow.jpeg')} // Adjust path based on your file structure
+            style={{ width: 1000, height: 250, marginTop: 10 , }}
+            resizeMode="contain"
+          /></View>
           <Text style={styles.description}>
             Your cows need to be fed. Will you feed them your stored wheat, special organic feed (15 gold), or cheap pellets (5 gold)? All choices require 2 hours.
           </Text>
@@ -305,6 +343,13 @@ export default function GameScreen() {
 
       {currentTask === 'results' && (
         <>
+          <View style={{justifyContent: 'center', alignItems: 'center',}}>
+          <Image
+            source={require('@/assets/gemini-images/feedingcows.jpeg')} // Adjust path based on your file structure
+            style={{ width: 1000, height: 250, marginTop: 10 , }}
+            resizeMode="contain"
+          /></View>
+          
           <Text style={styles.description}>
             Congratulations on completing your first day as a farmer! 
           </Text>
@@ -332,6 +377,7 @@ export default function GameScreen() {
           <Button style={styles.button} onPress={continueOn}>
             Continue to Free Story Mode
           </Button>
+          
         </>
       )}  
 
