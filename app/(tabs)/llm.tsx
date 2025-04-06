@@ -1,5 +1,5 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRoute } from '@react-navigation/native'; // Import useRoute for accessing params
 import { Button, StyleSheet, TextInput, ScrollView, View, Text, TouchableOpacity } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -19,12 +19,16 @@ function formatStatValue(value: any) {
 }
 
 export default function HomeScreen() {
-  const [stats, setStats] = useState({
-    cows: 5,
-    wheat: 100,
-    gold: 50,
-    human: 10,
-    herbicide: false
+  const route = useRoute();
+  const passedValue = route.params?.passedValue;
+
+  const [stats, setStats] = useState(() => {
+    try {
+      return passedValue ? JSON.parse(passedValue) : { cows: 5, wheat: 100, gold: 50, herbicide: false, fertilizer: false, pellets: false  };
+    } catch (error) {
+      console.error('Error parsing passedValue:', error);
+      return { cows: 5, wheat: 100, gold: 50, herbicide: false, fertilizer: false, pellets: false };
+    }
   });
 
   const [philosophy, setPhilosophy] = useState('Organic');
@@ -79,6 +83,7 @@ export default function HomeScreen() {
       setResponse(`Consequence: ${data.consequence}`);
       setStats(data.newStats);
       setOptions([]);
+      setPhilosophy('');
     } catch (error) {
       console.error('Error evaluating choice:', error);
       setResponse('Error evaluating choice.');
@@ -89,15 +94,6 @@ export default function HomeScreen() {
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>🌾 Farming Simulator Test</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Farming Philosophy:</Text>
-        <TextInput
-          style={styles.input}
-          value={philosophy}
-          onChangeText={setPhilosophy}
-        />
-      </View>
-
       <View style={styles.statsContainer}>
         <Text style={styles.subtitle}>📊 Current Farm Stats:</Text>
         {Object.entries(stats).map(([key, value]) => (
@@ -105,6 +101,15 @@ export default function HomeScreen() {
             {capitalizeFirstLetter(key)}: {formatStatValue(value)}
           </Text>
         ))}
+      </View>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>What do you want to do next?</Text>
+        <TextInput
+          style={styles.input}
+          value={philosophy}
+          onChangeText={setPhilosophy}
+        />
       </View>
 
       <TouchableOpacity style={styles.button} onPress={fetchFarmEvent}>
@@ -161,9 +166,17 @@ const styles = StyleSheet.create({
   },
   statsContainer: {
     backgroundColor: '#fffaf0',
-    padding: 16,
+    padding: 10,
     borderRadius: 12,
     marginBottom: 20,
+    marginTop: 10, // added marginTop to separate from title
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    elevation: 3,
+    width: 200, // changed width of statscontainer
+    alignSelf: 'center', // center the stats container
   },
   subtitle: {
     fontSize: 18,

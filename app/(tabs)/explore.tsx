@@ -118,19 +118,23 @@ export default function GameScreen() {
 
   const continueOn = () => {
     const newStats = {
-      gold: gold,
-      cows: cows,
-      wheatCapacity: wheatCapacity,
-      wheatStorage: wheatStorage,
-      herbicide: hasHerbicide,
-      fertilizer: hasFertilizer,
-      pellets: hasPellets,
+      gold: gold || 0,
+      cows: cows || 0,
+      wheatCapacity: wheatCapacity || 0,
+      wheatStorage: wheatStorage || 0,
+      herbicide: hasHerbicide || false,
+      fertilizer: hasFertilizer || false,
+      pellets: hasPellets || false,
     };
 
-    router.navigate({
-      pathname: '/llm',
-      params: { passedValue: JSON.stringify(newStats) }, // 📦 stringify to safely pass as a param
-    });
+    try {
+      router.navigate({
+        pathname: '/llm',
+        params: { passedValue: JSON.stringify(newStats) }, // Serialize the stats
+      });
+    } catch (error) {
+      console.error('Navigation failed:', error);
+    }
   };
 
   const openModal = (entry) => {
@@ -162,7 +166,7 @@ export default function GameScreen() {
           {!(weedComplete && harvestComplete && fertilizeComplete) && (
           <>
             <Text style={styles.description}>
-              You're a farmer in the rural countryside, and every day you wake up and tend to your crops and livestock for 12 hours. 
+              You're a farmer in the rural countryside, and every day you wake up and tend to your crops and livestock for 8 hours. 
               Each action in your day will require a certain amount of time, depending on your choices. 
             </Text>
             <Text style={styles.description}>Choose your next task:</Text>
@@ -437,21 +441,25 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   title: {
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 10,
+    paddingTop: 30,
+    textAlign: 'center',
   },
   statsContainer: {
     backgroundColor: '#fffaf0',
     padding: 10,
     borderRadius: 12,
     marginBottom: 20,
+    marginTop: 10, // added marginTop to separate from title
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
     width: 200, // changed width of statscontainer
+    alignSelf: 'center', // center the stats container
   },
   stat: {
     fontSize: 16,
@@ -464,7 +472,7 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 8,
     borderRadius: 10,
-    backgroundColor: '#2e7d32'
+    backgroundColor: '#2e7d32',
   },
   logTitle: {
     marginTop: 30,
