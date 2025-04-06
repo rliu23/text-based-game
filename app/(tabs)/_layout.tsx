@@ -35,10 +35,17 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="index"
+        name="llm"
         options={{
           title: 'Infinite LLM Story',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="infinity" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="tractor" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="index"
+        options={{
+          title: 'Welcome',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="barn" color={color} />,
         }}
       />
     </Tabs>

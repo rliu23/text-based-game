@@ -1,206 +1,187 @@
+import React, { useState, useEffect } from 'react';
+import { Text, View, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
+import { Audio } from 'expo-av';
+import { useRouter } from 'expo-router';
 
-import { useState } from 'react';
-import { Button, StyleSheet, TextInput, ScrollView, View, Text, TouchableOpacity } from 'react-native';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+// ====================
+// Constants & Globals
+// ====================
+const fullMessage = "Welcome, young farmer... Your journey to sustainable agriculture begins now.";
+const fadeAnim = new Animated.Value(0);
+const animationLoopRef = { current: null };
+const music = { current: null };
+const router = useRouter();
 
-function capitalizeFirstLetter(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+// ====================
+// Animation Controls
+// ====================
+const startBreathingAnimation = () => {
+  animationLoopRef.current = Animated.loop(
+    Animated.sequence([
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 3000,
+        easing: Easing.inOut(Easing.sin),
+        useNativeDriver: true
+      }),
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 3000,
+        easing: Easing.inOut(Easing.sin),
+        useNativeDriver: true
+      })
+    ])
+  );
+  animationLoopRef.current.start();
+};
 
-function formatStatValue(value: any) {
-  if (typeof value === 'boolean') {
-    return value ? 'Yes' : 'No';
-  }
-  if (value === null || value === undefined) {
-    return 'N/A';
-  }
-  return String(value);
-}
+const stopBreathingAnimation = () => {
+  animationLoopRef.current?.stop();
+};
 
-export default function HomeScreen() {
-  const [stats, setStats] = useState({
-    cows: 5,
-    wheat: 100,
-    gold: 50,
-    human: 10,
-    herbicide: false
-  });
+// ====================
+// Main Component
+// ====================
+export default function WelcomeScreen({ onStart }) {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isHovered, setIsHovered] = useState(false);
 
-  const [philosophy, setPhilosophy] = useState('Organic');
-  const [response, setResponse] = useState('');
-  const [options, setOptions] = useState<string[]>([]);
-  const [history, setHistory] = useState<string[]>([]);
+  // Typing effect
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayedText(fullMessage.slice(0, i + 1));
+      i++;
+      if (i >= fullMessage.length) clearInterval(interval);
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
 
-  async function fetchFarmEvent() {
-    try {
-      const res = await fetch('http://localhost:3001/generate-event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stats, philosophy, history }),
-      });
-
-      const data = await res.json();
-      console.log('Full response:', data.reply);
-
-      const consequenceMatch = data.reply.match(/Consequence:\s*(.*)/);
-      const eventMatch = data.reply.match(/Event:\s*(.*)/);
-      const option1Match = data.reply.match(/Option 1:\s*(.*)/);
-      const option2Match = data.reply.match(/Option 2:\s*(.*)/);
-
-      const consequence = consequenceMatch ? consequenceMatch[1] : '';
-      const eventText = eventMatch ? eventMatch[1] : '';
-      const option1 = option1Match ? option1Match[1] : '';
-      const option2 = option2Match ? option2Match[1] : '';
-
-      setResponse(`${consequence}\n\n${eventText}`);
-      setOptions([option1, option2]);
-    } catch (error) {
-      console.error('Error fetching from backend:', error);
-      setResponse('Error connecting to backend.');
-      setOptions([]);
+  // Start breathing animation after typing finishes
+  useEffect(() => {
+    if (displayedText === fullMessage && !isHovered) {
+      startBreathingAnimation();
     }
-  }
+  }, [displayedText]);
 
-  async function chooseOption(option: string) {
-    setHistory(prev => [...prev, option]);
-
-    try {
-      const res = await fetch('http://localhost:3001/evaluate-choice', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ choice: option, stats, philosophy }),
-      });
-
-      const data = await res.json();
-      console.log('Consequence:', data.consequence);
-      console.log('New Stats:', data.newStats);
-
-      setResponse(`Consequence: ${data.consequence}`);
-      setStats(data.newStats);
-      setOptions([]);
-    } catch (error) {
-      console.error('Error evaluating choice:', error);
-      setResponse('Error evaluating choice.');
+  // Pause/resume animation on hover
+  useEffect(() => {
+    if (isHovered) {
+      stopBreathingAnimation();
+      fadeAnim.setValue(1); // Make fully visible when hovered
+    } else if (displayedText === fullMessage) {
+      startBreathingAnimation();
     }
-  }
+  }, [isHovered]);
+
+  // Load background music
+  useEffect(() => {
+    const loadMusic = async () => {
+      try {
+        const { sound } = await Audio.Sound.createAsync(
+          require('../../assets/music/ambient.mp3'),
+          {
+            shouldPlay: true,
+            isLooping: true,
+            volume: 0.5
+          }
+        );
+        music.current = sound;
+        await sound.playAsync();
+      } catch (e) {
+        console.error('Error loading music:', e);
+      }
+    };
+
+    loadMusic();
+
+    return () => {
+      if (music.current) {
+        music.current.unloadAsync();
+      }
+    };
+  }, []);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>🌾 Farming Simulator Test</Text>
+    <View style={styles.container}>
+      <Text style={styles.typingText}>{displayedText}</Text>
 
-      <View style={styles.inputContainer}>
-        <Text style={styles.label}>Farming Philosophy:</Text>
-        <TextInput
-          style={styles.input}
-          value={philosophy}
-          onChangeText={setPhilosophy}
-        />
-      </View>
+      <Animated.View
+        style={{
+          opacity: displayedText === fullMessage
+            ? (isHovered ? 1 : fadeAnim)
+            : 0,
+          marginTop: 30,
+          height: 50,
+          justifyContent: 'center'
+        }}
+        pointerEvents={displayedText === fullMessage ? 'auto' : 'none'}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <TouchableOpacity onPress={() => router.replace('/explore')} style={styles.startButton}>
+          <Text style={styles.startText}>▶ Start Game</Text>
+        </TouchableOpacity>
 
-      <View style={styles.statsContainer}>
-        <Text style={styles.subtitle}>📊 Current Farm Stats:</Text>
-        {Object.entries(stats).map(([key, value]) => (
-          <Text style={styles.stat} key={key}>
-            {capitalizeFirstLetter(key)}: {formatStatValue(value)}
-          </Text>
-        ))}
-      </View>
-
-      <TouchableOpacity style={styles.button} onPress={fetchFarmEvent}>
-        <Text style={styles.buttonText}>🌱 Generate Farm Event</Text>
-      </TouchableOpacity>
-
-      <View style={styles.responseContainer}>
-        <Text style={styles.subtitle}>Generated Event:</Text>
-        <Text style={styles.responseText}>{response}</Text>
-
-        {options.length > 0 && (
-          <View style={styles.optionsContainer}>
-            <TouchableOpacity style={styles.button} onPress={() => chooseOption(options[0])}>
-              <Text style={styles.buttonText}>{options[0]}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={() => chooseOption(options[1])}>
-              <Text style={styles.buttonText}>{options[1]}</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      </View>
-    </ScrollView>
+        {/* <TouchableOpacity
+          onPress={async () => {
+            if (music.current) {
+              const status = await music.current.getStatusAsync();
+              if (status.isPlaying) {
+                await music.current.pauseAsync();
+                console.log('Music paused');
+              } else {
+                await music.current.playAsync();
+                console.log('Music resumed');
+              }
+            }
+          }}
+          style={[styles.startButton, { marginTop: 20, borderColor: '#1565c0' }]}
+        >
+          <Text style={[styles.startText, { color: '#1565c0' }]}>🎵 Toggle Music</Text>
+        </TouchableOpacity> */}
+      </Animated.View>
+    </View>
   );
 }
 
+// ====================
+// Styles
+// ====================
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f0f8ff',
-    padding: 20,
-    flexGrow: 1,
-  },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#2e7d32',
-    textAlign: 'center',
-    marginBottom: 10,
-  },
-  inputContainer: {
-    marginBottom: 16,
-  },
-  label: {
-    fontSize: 18,
-    color: '#2e7d32',
-    marginBottom: 4,
-  },
-  input: {
-    borderColor: '#2e7d32',
-    borderWidth: 2,
-    borderRadius: 8,
-    padding: 10,
-    backgroundColor: '#fff',
-    color: '#2e7d32',
-  },
-  statsContainer: {
-    backgroundColor: '#fffaf0',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 20,
-  },
-  subtitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2e7d32',
-    marginBottom: 10,
-  },
-  stat: {
-    fontSize: 16,
-    color: '#2e7d32',
-    marginBottom: 4,
-  },
-  button: {
-    backgroundColor: '#2e7d32',
-    padding: 12,
-    borderRadius: 10,
-    marginVertical: 8,
+    flex: 1,
+    backgroundColor: '#e3f2fd',
+    justifyContent: 'center',
     alignItems: 'center',
+    padding: 30
   },
-  buttonText: {
-    color: '#ffffff',
+  typingText: {
+    fontSize: 24,
+    fontFamily: 'Courier',
+    textAlign: 'center',
+    color: '#2e7d32',
+    lineHeight: 34
+  },
+  startButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    borderWidth: 2,
+    borderColor: '#2e7d32',
+    borderRadius: 4,
+    shadowColor: '#2e7d32',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4
+  },
+  startText: {
+    fontSize: 22,
+    fontFamily: 'Courier',
+    color: '#2e7d32',
     fontWeight: 'bold',
-    fontSize: 16,
-  },
-  responseContainer: {
-    marginTop: 20,
-    backgroundColor: '#fffaf0',
-    padding: 16,
-    borderRadius: 12,
-  },
-  responseText: {
-    fontSize: 16,
-    color: '#333',
-    marginTop: 10,
-  },
-  optionsContainer: {
-    marginTop: 20,
-    gap: 10,
-  },
+    textShadowColor: '#A5D6A7',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2
+  }
 });
