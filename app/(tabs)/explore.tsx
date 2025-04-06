@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity, Image } from 'react-native';
 import { Button } from 'react-native-paper';
 import { router } from 'expo-router';
 
 export default function GameScreen() {
   const [hoursLeft, setHoursLeft] = useState(8);
-  const [gold, setGold] = useState(100);
+  const [gold, setGold] = useState(50);
   const [cows, setCows] = useState(10);
   const [wheatCapacity, setWheatCapacity] = useState(20);
   const [wheatStorage, setWheatStorage] = useState(10);
@@ -20,11 +20,18 @@ export default function GameScreen() {
   const [fertilizeComplete, setFertilizeComplete] = useState(false);
   const [cowComplete, setCowComplete] = useState(false);
   const [stats, setStats] = useState({ gold: 10, cows: 5, wheatCapacity: 10, wheatStorage: 10, herbicide: false, fertilizer: false, pellets: false });
-
+  const [selectedEntry, setSelectedEntry] = useState(null); // State to track the selected log entry
+  const [isModalVisible, setIsModalVisible] = useState(false); // State to control modal visibility
 
   const handleBackToMenu = () => {
     setCurrentTask('menu');
     setTaskCompleted(false); // Reset task completion when going back to the menu
+  };
+
+  const handleTaskCompletion = (logEntry) => {
+    setTaskCompleted(true);
+    setSelectedEntry(logEntry); // Set the log entry for the modal
+    setIsModalVisible(true); // Show the modal
   };
 
   const buyHerbicideAndSpray = () => {
@@ -32,22 +39,18 @@ export default function GameScreen() {
     setHasHerbicide(true);
     setHoursLeft(hoursLeft - 1);
     setGold(gold - 10);
-    setLog([
-      '🛒 You bought herbicide and sprayed your field.',
-      'Fun Fact: Chemical herbicides work fast but can linger in the soil.',
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = '🛒 You bought herbicide and sprayed your field.\nFun fact: Chemical herbicides work fast but can linger in the soil. (Kanissery et al., 2020)';
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setWeedComplete(true);
   };
 
   const weedByHand = () => {
     if (hoursLeft < 2) return;
     setHoursLeft(hoursLeft - 2);
-    setLog([
-      '💪 You weeded the field by hand.',
-      'Fun Fact: Weeding by hand is safe and environmentally-friendly, but intensive work. :(',
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = '💪 You weeded the field by hand.\nFun fact: Weeding by hand is environmentally-friendly, but intensive work. :(';
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setWeedComplete(true);
   };
 
@@ -55,11 +58,9 @@ export default function GameScreen() {
     if (hoursLeft < 2) return;
     setHoursLeft(hoursLeft - 2);
     setWheatStorage(wheatStorage+wheatCapacity);
-    setLog([
-      `🌾 You harvested ${wheatCapacity} wheat!`,
-      'Fun fact: Wheat has been harvested since around 9600 B.C.',
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = `🌾 You harvested ${wheatCapacity} wheat!\nFun fact: Wheat has been harvested since around 10,000 B.C. (de Sousa et al., 2021)`;
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setHarvestComplete(true);
   };
 
@@ -68,24 +69,18 @@ export default function GameScreen() {
     setHoursLeft(hoursLeft - 1);
     setGold(gold - 10);
     setHasFertilizer(true);
-    setLog([
-      `🌾 Your crops have been fertilized with synthetic fertilizer. This action may have other effects…`,
-      'Fun fact: Synthetic fertilizer is cheaper than organic fertilizer but can cause nearby waterways to turn green or cloud with algae blooms.',
-
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = `🌾 Your crops have been fertilized with synthetic fertilizer. This action may have other effects…\nFun fact: Synthetic fertilizer is cheaper than organic fertilizer but can cause nearby waterways to turn green or cloud with algae blooms.`;
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setFertilizeComplete(true);
   };
 
   const manureCrops = () => {
     if (hoursLeft < 3) return;
     setHoursLeft(hoursLeft - 3);
-    setLog([
-      `🌾 After a grueling 3 hours of hard work, you’ve fertilized your crops with fresh manure from your cows! Field capacity +5`,
-      'Fun fact: Natural fertilizer is more expensive but creates a more self-sufficient soil system.',
-
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = `🌾 After a grueling 3 hours of hard work, you’ve fertilized your crops with fresh manure from your cows! Field capacity +5\nFun fact: Natural fertilizer is more expensive but creates a more self-sufficient soil system. (Cherlinka, 2025)`;
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setFertilizeComplete(true);
     setWheatCapacity(wheatCapacity+5);
   };
@@ -93,11 +88,9 @@ export default function GameScreen() {
   const wheatCows = () => {
     if (hoursLeft < 2) return;
     setHoursLeft(hoursLeft - 2);
-    setLog([
-      `🐄  You fed your cows with wheat from your own stores.`,
-
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = `🐄  You fed your cows with wheat from your own stores.`;
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setCowComplete(true);
   };
 
@@ -106,12 +99,9 @@ export default function GameScreen() {
     setHoursLeft(hoursLeft - 2);
     setGold(gold - 15);
     setCows(cows + 1);
-    setLog([
-      `🐄  Your cows were pampered with an extravagant organic feast. Cows +1`,
-      'Fun fact: Organic feed promotes digestive health by decreasing acidity in the cows’ first stomach.',
-
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = `🐄  Your cows were pampered with an extravagant organic feast. Cows +1\nFun fact: Organic feed promotes digestive health by decreasing acidity in the cows’ first stomach. (Automatic Equipment Manufacturing, 2021)`;
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setCowComplete(true);
   };
 
@@ -120,12 +110,9 @@ export default function GameScreen() {
     setHoursLeft(hoursLeft - 2);
     setHasPellets(true);
     setGold(gold - 5);
-    setLog([
-      `🐄  Your cows are pretty sad from their dry pellet meal.`,
-      'Fun fact: Pellets are easier for cows to eat but they reduce nutrient digestibility.',
-
-    ]);
-    setTaskCompleted(true); 
+    const logEntry = `🐄  Your cows are pretty sad from their dry pellet meal.\nFun fact: Pellets are easier for cows to eat but they reduce nutrient digestibility. (Retnani et al., 2022)`;
+    setLog([...log, logEntry]);
+    handleTaskCompletion(logEntry); // Call the new function
     setCowComplete(true);
   };
 
@@ -146,6 +133,18 @@ export default function GameScreen() {
     });
   };
 
+  const openModal = (entry) => {
+    setSelectedEntry(entry);
+    setIsModalVisible(true);
+  };
+
+  const closeModal = () => {
+    setSelectedEntry(null);
+    setIsModalVisible(false);
+    setCurrentTask('menu');
+    setTaskCompleted(false);
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>🌾 Farmer's Day</Text>
@@ -159,19 +158,17 @@ export default function GameScreen() {
 
       {currentTask === 'menu' && (
         <>
-          {!weedComplete && !harvestComplete && !fertilizeComplete &&
+          {!(weedComplete && harvestComplete && fertilizeComplete) && (
           <>
             <Text style={styles.description}>
               You're a farmer in the rural countryside, and every day you wake up and tend to your crops and livestock for 12 hours. 
               Each action in your day will require a certain amount of time, depending on your choices. 
             </Text>
-            <Text style={styles.description}>
-              Which task would you like to complete first?
-            </Text>
             <Text style={styles.description}>Choose your next task:</Text>
-          </>}
+          </>)}
 
-          
+         
+
           {false && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('shopping')}>
             Go to the Market 
           </Button> }
@@ -225,12 +222,9 @@ export default function GameScreen() {
               onPress={() => {
                 if (hoursLeft < 1) return;
                 setHoursLeft(hoursLeft - 1);
-                setLog([
-                  ...log,
-                  '🌱 You buy herbicide and spray it generously. This action may have other effects...',
-                  'Fun Fact: Chemical herbicides work quickly but can linger in the soil.',
-                ]);
-                setTaskCompleted(true); 
+                const logEntry = '🌱 You buy herbicide and spray it generously. This action may have other effects...\nFun Fact: Chemical herbicides work quickly but can linger in the soil.';
+                setLog([...log, logEntry]);
+                handleTaskCompletion(logEntry); // Call the new function
                 setWeedComplete(true);
               }}
             >
@@ -393,17 +387,35 @@ export default function GameScreen() {
 
       {taskCompleted && (
         <>
+          
           <Text style={styles.description}>Task completed! 🎉</Text>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            Back to Menu
-          </Button>
         </>
       )}
 
       <Text style={styles.logTitle}>📜 Activity Log:</Text>
       {log.map((entry, idx) => (
-        <Text key={idx} style={styles.logEntry}>• {entry}</Text>
+        <TouchableOpacity key={idx} onPress={() => openModal(entry)}>
+          <Text style={styles.logEntry}>• {entry}</Text>
+        </TouchableOpacity>
       ))}
+
+      {/* Modal for displaying the selected log entry */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={closeModal}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Task Completed!</Text>
+            <Text style={styles.modalText}>{selectedEntry}</Text>
+            <Button mode="contained" style={styles.modalButton} onPress={closeModal}>
+              Back to Choices
+            </Button>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -450,5 +462,35 @@ const styles = StyleSheet.create({
   logEntry: {
     fontSize: 16,
     marginTop: 5,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 10,
+    padding: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  modalButton: {
+    borderRadius: 10,
   },
 });
