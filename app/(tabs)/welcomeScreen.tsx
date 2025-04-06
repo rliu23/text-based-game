@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, TouchableOpacity, Animated, Easing } from 'react-native';
 import { Audio } from 'expo-av';
+import { useRouter } from 'expo-router';
 
 // ====================
 // Constants & Globals
@@ -9,6 +10,7 @@ const fullMessage = "Welcome, young farmer... Your journey to sustainable agricu
 const fadeAnim = new Animated.Value(0);
 const animationLoopRef = { current: null };
 const music = { current: null };
+const router = useRouter();
 
 // ====================
 // Animation Controls
@@ -117,11 +119,11 @@ export default function WelcomeScreen({ onStart }) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <TouchableOpacity onPress={onStart} style={styles.startButton}>
+        <TouchableOpacity onPress={() => router.replace('/explore')} style={styles.startButton}>
           <Text style={styles.startText}>▶ Start Game</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={async () => {
             if (music.current) {
               const status = await music.current.getStatusAsync();
@@ -137,7 +139,7 @@ export default function WelcomeScreen({ onStart }) {
           style={[styles.startButton, { marginTop: 20, borderColor: '#1565c0' }]}
         >
           <Text style={[styles.startText, { color: '#1565c0' }]}>🎵 Toggle Music</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </Animated.View>
     </View>
   );
