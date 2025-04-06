@@ -51,3 +51,15 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+
+// import { Stack } from 'expo-router';
+
+// export default function RootLayout() {
+//   return (
+//     <Stack
+//       screenOptions={{
+//         headerShown: false, // removes header for welcomeScreen
+//       }}
+//     />
+//   );
+// }
