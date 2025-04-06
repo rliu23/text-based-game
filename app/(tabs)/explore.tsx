@@ -5,7 +5,7 @@ import { router } from 'expo-router';
 
 export default function GameScreen() {
   const [hoursLeft, setHoursLeft] = useState(8);
-  const [gold, setGold] = useState(100);
+  const [gold, setGold] = useState(50);
   const [cows, setCows] = useState(10);
   const [wheatCapacity, setWheatCapacity] = useState(20);
   const [wheatStorage, setWheatStorage] = useState(10);
@@ -39,7 +39,7 @@ export default function GameScreen() {
     setHasHerbicide(true);
     setHoursLeft(hoursLeft - 1);
     setGold(gold - 10);
-    const logEntry = '🛒 You bought herbicide and sprayed your field.\nFun Fact: Chemical herbicides work fast but can linger in the soil.';
+    const logEntry = '🛒 You bought herbicide and sprayed your field.\nFun fact: Chemical herbicides work fast but can linger in the soil. (Kanissery et al., 2020)';
     setLog([...log, logEntry]);
     handleTaskCompletion(logEntry); // Call the new function
     setWeedComplete(true);
@@ -48,7 +48,7 @@ export default function GameScreen() {
   const weedByHand = () => {
     if (hoursLeft < 2) return;
     setHoursLeft(hoursLeft - 2);
-    const logEntry = '💪 You weeded the field by hand.\nFun Fact: Weeding by hand is safe and environmentally-friendly, but intensive work. :(';
+    const logEntry = '💪 You weeded the field by hand.\nFun fact: Weeding by hand is environmentally-friendly, but intensive work. :(';
     setLog([...log, logEntry]);
     handleTaskCompletion(logEntry); // Call the new function
     setWeedComplete(true);
@@ -58,7 +58,7 @@ export default function GameScreen() {
     if (hoursLeft < 2) return;
     setHoursLeft(hoursLeft - 2);
     setWheatStorage(wheatStorage+wheatCapacity);
-    const logEntry = `🌾 You harvested ${wheatCapacity} wheat!\nFun fact: Wheat has been harvested since around 9600 B.C.`;
+    const logEntry = `🌾 You harvested ${wheatCapacity} wheat!\nFun fact: Wheat has been harvested since around 10,000 B.C. (de Sousa et al., 2021)`;
     setLog([...log, logEntry]);
     handleTaskCompletion(logEntry); // Call the new function
     setHarvestComplete(true);
@@ -78,7 +78,7 @@ export default function GameScreen() {
   const manureCrops = () => {
     if (hoursLeft < 3) return;
     setHoursLeft(hoursLeft - 3);
-    const logEntry = `🌾 After a grueling 3 hours of hard work, you’ve fertilized your crops with fresh manure from your cows! Field capacity +5\nFun fact: Natural fertilizer is more expensive but creates a more self-sufficient soil system.`;
+    const logEntry = `🌾 After a grueling 3 hours of hard work, you’ve fertilized your crops with fresh manure from your cows! Field capacity +5\nFun fact: Natural fertilizer is more expensive but creates a more self-sufficient soil system. (Cherlinka, 2025)`;
     setLog([...log, logEntry]);
     handleTaskCompletion(logEntry); // Call the new function
     setFertilizeComplete(true);
@@ -99,7 +99,7 @@ export default function GameScreen() {
     setHoursLeft(hoursLeft - 2);
     setGold(gold - 15);
     setCows(cows + 1);
-    const logEntry = `🐄  Your cows were pampered with an extravagant organic feast. Cows +1\nFun fact: Organic feed promotes digestive health by decreasing acidity in the cows’ first stomach.`;
+    const logEntry = `🐄  Your cows were pampered with an extravagant organic feast. Cows +1\nFun fact: Organic feed promotes digestive health by decreasing acidity in the cows’ first stomach. (Automatic Equipment Manufacturing, 2021)`;
     setLog([...log, logEntry]);
     handleTaskCompletion(logEntry); // Call the new function
     setCowComplete(true);
@@ -110,7 +110,7 @@ export default function GameScreen() {
     setHoursLeft(hoursLeft - 2);
     setHasPellets(true);
     setGold(gold - 5);
-    const logEntry = `🐄  Your cows are pretty sad from their dry pellet meal.\nFun fact: Pellets are easier for cows to eat but they reduce nutrient digestibility.`;
+    const logEntry = `🐄  Your cows are pretty sad from their dry pellet meal.\nFun fact: Pellets are easier for cows to eat but they reduce nutrient digestibility. (Retnani et al., 2022)`;
     setLog([...log, logEntry]);
     handleTaskCompletion(logEntry); // Call the new function
     setCowComplete(true);
@@ -132,6 +132,8 @@ export default function GameScreen() {
   const closeModal = () => {
     setSelectedEntry(null);
     setIsModalVisible(false);
+    setCurrentTask('menu');
+    setTaskCompleted(false);
   };
 
   return (
@@ -147,19 +149,17 @@ export default function GameScreen() {
 
       {currentTask === 'menu' && (
         <>
-          {!weedComplete && !harvestComplete && !fertilizeComplete &&
+          {!(weedComplete && harvestComplete && fertilizeComplete) && (
           <>
             <Text style={styles.description}>
               You're a farmer in the rural countryside, and every day you wake up and tend to your crops and livestock for 12 hours. 
               Each action in your day will require a certain amount of time, depending on your choices. 
             </Text>
-            <Text style={styles.description}>
-              Which task would you like to complete first?
-            </Text>
             <Text style={styles.description}>Choose your next task:</Text>
-          </>}
+          </>)}
 
-          
+         
+
           {false && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('shopping')}>
             Go to the Market 
           </Button> }
