@@ -158,6 +158,7 @@ export default function GameScreen() {
 
       {currentTask === 'menu' && (
         <>
+          
           {!(weedComplete && harvestComplete && fertilizeComplete) && (
           <>
             <Text style={styles.description}>
@@ -169,25 +170,34 @@ export default function GameScreen() {
 
          
 
-          {false && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('shopping')}>
-            Go to the Market 
-          </Button> }
           
+          <View style={{flexDirection:"row"}}>
+          <View style={{flex:1, paddingHorizontal: 20}}>
           {!weedComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('weeding')}>
             Remove Weeds from Wheat Field
           </Button> }
-          
+
+          </View>
+          <View style={{flex:1, paddingHorizontal: 20}}>
           {!harvestComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('harvest')}>
             Harvest Crops
           </Button>}
+          </View>
+          </View>
+
+          <View style={{flexDirection:"row"}}>
+          <View style={{flex:1, paddingHorizontal: 20}}>
 
           {!fertilizeComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('fertilize')}>
             Fertilize Crops
           </Button>}
-
+          </View>
+          <View style={{flex:1, paddingHorizontal: 20}}>
           {!cowComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('cow')}>
             Feed Cows
           </Button>}
+          </View>
+          </View>
 
           {weedComplete && harvestComplete && fertilizeComplete && cowComplete && <Text style={styles.description}>Congratulations on completing all tasks! Continue to see your results.</Text>}
           {weedComplete && harvestComplete && fertilizeComplete && cowComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('results')}>
@@ -441,6 +451,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    width: 200, // changed width of statscontainer
   },
   stat: {
     fontSize: 16,
