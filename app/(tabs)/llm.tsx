@@ -23,7 +23,6 @@ export default function HomeScreen() {
     cows: 5,
     wheat: 100,
     gold: 50,
-    human: 10,
     herbicide: false
   });
 
