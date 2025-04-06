@@ -118,19 +118,23 @@ export default function GameScreen() {
 
   const continueOn = () => {
     const newStats = {
-      gold: gold,
-      cows: cows,
-      wheatCapacity: wheatCapacity,
-      wheatStorage: wheatStorage,
-      herbicide: hasHerbicide,
-      fertilizer: hasFertilizer,
-      pellets: hasPellets,
+      gold: gold || 0,
+      cows: cows || 0,
+      wheatCapacity: wheatCapacity || 0,
+      wheatStorage: wheatStorage || 0,
+      herbicide: hasHerbicide || false,
+      fertilizer: hasFertilizer || false,
+      pellets: hasPellets || false,
     };
 
-    router.navigate({
-      pathname: '/',
-      params: { passedValue: JSON.stringify(newStats) }, // 📦 stringify to safely pass as a param
-    });
+    try {
+      router.navigate({
+        pathname: '/llm',
+        params: { passedValue: JSON.stringify(newStats) }, // Serialize the stats
+      });
+    } catch (error) {
+      console.error('Navigation failed:', error);
+    }
   };
 
   const openModal = (entry) => {
@@ -158,10 +162,11 @@ export default function GameScreen() {
 
       {currentTask === 'menu' && (
         <>
+          
           {!(weedComplete && harvestComplete && fertilizeComplete) && (
           <>
             <Text style={styles.description}>
-              You're a farmer in the rural countryside, and every day you wake up and tend to your crops and livestock for 12 hours. 
+              You're a farmer in the rural countryside, and every day you wake up and tend to your crops and livestock for 8 hours. 
               Each action in your day will require a certain amount of time, depending on your choices. 
             </Text>
             <Text style={styles.description}>Choose your next task:</Text>
@@ -169,25 +174,34 @@ export default function GameScreen() {
 
          
 
-          {false && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('shopping')}>
-            Go to the Market 
-          </Button> }
           
+          <View style={{flexDirection:"row"}}>
+          <View style={{flex:1, paddingHorizontal: 20}}>
           {!weedComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('weeding')}>
             Remove Weeds from Wheat Field
           </Button> }
-          
+
+          </View>
+          <View style={{flex:1, paddingHorizontal: 20}}>
           {!harvestComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('harvest')}>
             Harvest Crops
           </Button>}
+          </View>
+          </View>
+
+          <View style={{flexDirection:"row"}}>
+          <View style={{flex:1, paddingHorizontal: 20}}>
 
           {!fertilizeComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('fertilize')}>
             Fertilize Crops
           </Button>}
-
+          </View>
+          <View style={{flex:1, paddingHorizontal: 20}}>
           {!cowComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('cow')}>
             Feed Cows
           </Button>}
+          </View>
+          </View>
 
           {weedComplete && harvestComplete && fertilizeComplete && cowComplete && <Text style={styles.description}>Congratulations on completing all tasks! Continue to see your results.</Text>}
           {weedComplete && harvestComplete && fertilizeComplete && cowComplete && <Button mode="contained" style={styles.button} onPress={() => setCurrentTask('results')}>
@@ -236,11 +250,11 @@ export default function GameScreen() {
             </Button>
           )}
 
-          <Button mode="outlined" style={styles.button} onPress={weedByHand}>
+          <Button mode="contained" style={styles.button} onPress={weedByHand}>
             Weed by Hand (2 hrs)
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -257,11 +271,11 @@ export default function GameScreen() {
             Your wheat field is ready to harvest!
           </Text>
 
-          <Button mode="outlined" style={styles.button} onPress={harvestCrops}>
+          <Button mode="contained" style={styles.button} onPress={harvestCrops}>
             Harvest Crops (2 hours)
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -278,14 +292,14 @@ export default function GameScreen() {
             Your wheat field needs to be fertilized. Would you like to fertilize your wheat field with synthetic fertilizers (1 hour, 10 gold) or collect and use cow manure as fertilizer (3 hours)?
           </Text>
 
-          <Button mode="outlined" style={styles.button} onPress={fertilizeCrops}>
+          <Button mode="contained" style={styles.button} onPress={fertilizeCrops}>
             Use Synthetic Fertilizer (1 hour)
           </Button>
-          <Button mode="outlined" style={styles.button} onPress={manureCrops}>
+          <Button mode="contained" style={styles.button} onPress={manureCrops}>
             Collect and Use Manure (3 hours)
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -302,17 +316,17 @@ export default function GameScreen() {
             Your cows need to be fed. Will you feed them your stored wheat, special organic feed (15 gold), or cheap pellets (5 gold)? All choices require 2 hours.
           </Text>
 
-          <Button mode="outlined" style={styles.button} onPress={wheatCows}>
+          <Button mode="contained" style={styles.button} onPress={wheatCows}>
             Feed Using Stored Wheat
           </Button>
-          <Button mode="outlined" style={styles.button} onPress={organicCows}>
+          <Button mode="contained" style={styles.button} onPress={organicCows}>
             Buy and Feed Organic Feed
           </Button>
-          <Button mode="outlined" style={styles.button} onPress={pelletCows}>
+          <Button mode="contained" style={styles.button} onPress={pelletCows}>
             Buy and Feed Pellets
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -339,7 +353,7 @@ export default function GameScreen() {
             Buy Pellets
           </Button>
           <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+            Back to Menu
           </Button>
         </>
       )}  
@@ -377,7 +391,7 @@ export default function GameScreen() {
           <Text style={styles.description}>
             Although technology such as herbicide and pellets can save time, they may harm the surrounding ecosystem and your own produce in the long-term.
           </Text>
-          <Button style={styles.button} onPress={continueOn}>
+          <Button mode="contained" style={styles.button} onPress={continueOn}>
             Continue to Free Story Mode
           </Button>
           
@@ -410,7 +424,7 @@ export default function GameScreen() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Task Completed!</Text>
             <Text style={styles.modalText}>{selectedEntry}</Text>
-            <Button mode="contained" style={styles.modalButton} onPress={closeModal}>
+            <Button mode="contained" style={styles.button} onPress={closeModal}>
               Back to Choices
             </Button>
           </View>
@@ -427,20 +441,25 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   title: {
-    fontSize: 26,
+    fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 10,
+    paddingTop: 30,
+    textAlign: 'center',
   },
   statsContainer: {
     backgroundColor: '#fffaf0',
     padding: 10,
     borderRadius: 12,
     marginBottom: 20,
+    marginTop: 10, // added marginTop to separate from title
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 5,
     elevation: 3,
+    width: 200, // changed width of statscontainer
+    alignSelf: 'center', // center the stats container
   },
   stat: {
     fontSize: 16,
@@ -453,6 +472,7 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 8,
     borderRadius: 10,
+    backgroundColor: '#2e7d32',
   },
   logTitle: {
     marginTop: 30,

@@ -10,7 +10,6 @@ const fullMessage = "Welcome, young farmer... Your journey to sustainable agricu
 const fadeAnim = new Animated.Value(0);
 const animationLoopRef = { current: null };
 const music = { current: null };
-const router = useRouter();
 
 // ====================
 // Animation Controls
@@ -43,6 +42,7 @@ const stopBreathingAnimation = () => {
 // Main Component
 // ====================
 export default function WelcomeScreen({ onStart }) {
+  const router = useRouter(); // Move useRouter here
   const [displayedText, setDisplayedText] = useState('');
   const [isHovered, setIsHovered] = useState(false);
 
@@ -119,7 +119,7 @@ export default function WelcomeScreen({ onStart }) {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <TouchableOpacity onPress={() => router.replace('/(tabs)/explore')} style={styles.startButton}>
+        <TouchableOpacity onPress={() => router.replace('/explore')} style={styles.startButton}>
           <Text style={styles.startText}>▶ Start Game</Text>
         </TouchableOpacity>
 

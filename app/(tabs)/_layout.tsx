@@ -1,13 +1,13 @@
-// import { Tabs } from 'expo-router';
-// import React from 'react';
-// import { Platform } from 'react-native';
+import { Tabs } from 'expo-router';
+import React from 'react';
+import { Platform } from 'react-native';
 
-// import { HapticTab } from '@/components/HapticTab';
-// import { IconSymbol } from '@/components/ui/IconSymbol';
-// import TabBarBackground from '@/components/ui/TabBarBackground';
-// import { Colors } from '@/constants/Colors';
-// import { useColorScheme } from '@/hooks/useColorScheme';
-// import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
+import { HapticTab } from '@/components/HapticTab';
+import { IconSymbol } from '@/components/ui/IconSymbol';
+import TabBarBackground from '@/components/ui/TabBarBackground';
+import { Colors } from '@/constants/Colors';
+import { useColorScheme } from '@/hooks/useColorScheme';
+import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
 
 // export default function TabLayout() {
 //   const colorScheme = useColorScheme();
@@ -35,10 +35,17 @@
 //         }}
 //       />
 //       <Tabs.Screen
-//         name="index"
+//         name="llm"
 //         options={{
 //           title: 'Infinite LLM Story',
-//           tabBarIcon: ({ color }) => <IconSymbol size={28} name="infinity" color={color} />,
+//           tabBarIcon: ({ color }) => <IconSymbol size={28} name="tractor" color={color} />,
+//         }}
+//       />
+//       <Tabs.Screen
+//         name="index"
+//         options={{
+//           title: 'Welcome',
+//           tabBarIcon: ({ color }) => <IconSymbol size={28} name="barn" color={color} />,
 //         }}
 //       />
 //     </Tabs>
