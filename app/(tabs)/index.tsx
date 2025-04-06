@@ -75,32 +75,32 @@ export default function WelcomeScreen({ onStart }) {
   }, [isHovered]);
 
   // Load background music
-  useEffect(() => {
-    const loadMusic = async () => {
-      try {
-        const { sound } = await Audio.Sound.createAsync(
-          require('../../assets/music/ambient.mp3'),
-          {
-            shouldPlay: true,
-            isLooping: true,
-            volume: 0.5
-          }
-        );
-        music.current = sound;
-        await sound.playAsync();
-      } catch (e) {
-        console.error('Error loading music:', e);
-      }
-    };
+  // useEffect(() => {
+  //   const loadMusic = async () => {
+  //     try {
+  //       const { sound } = await Audio.Sound.createAsync(
+  //         require('../../assets/music/ambient.mp3'),
+  //         {
+  //           shouldPlay: true,
+  //           isLooping: true,
+  //           volume: 0.5
+  //         }
+  //       );
+  //       music.current = sound;
+  //       await sound.playAsync();
+  //     } catch (e) {
+  //       console.error('Error loading music:', e);
+  //     }
+  //   };
 
-    loadMusic();
+  //   loadMusic();
 
-    return () => {
-      if (music.current) {
-        music.current.unloadAsync();
-      }
-    };
-  }, []);
+  //   return () => {
+  //     if (music.current) {
+  //       music.current.unloadAsync();
+  //     }
+  //   };
+  // }, []);
 
   return (
     <View style={styles.container}>
