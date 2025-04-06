@@ -119,7 +119,7 @@ export default function GameScreen() {
   const continueOn = () => {
     setStats({ gold: gold, cows: cows, wheatCapacity: wheatCapacity, wheatStorage: wheatStorage, herbicide: hasHerbicide, fertilizer: hasFertilizer, pellets: hasPellets, });
     router.navigate({
-      pathname: '/index',
+      pathname: '/',
       params: { passedValue: stats },
     });
   };
@@ -380,9 +380,6 @@ export default function GameScreen() {
         <>
           
           <Text style={styles.description}>Task completed! 🎉</Text>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            Back to Menu
-          </Button>
         </>
       )}
 
@@ -405,7 +402,7 @@ export default function GameScreen() {
             <Text style={styles.modalTitle}>Task Completed!</Text>
             <Text style={styles.modalText}>{selectedEntry}</Text>
             <Button mode="contained" style={styles.modalButton} onPress={closeModal}>
-              Close
+              Back to Choices
             </Button>
           </View>
         </View>
