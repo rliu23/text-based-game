@@ -387,7 +387,7 @@ export default function GameScreen() {
           <Text style={styles.description}>
             Although technology such as herbicide and pellets can save time, they may harm the surrounding ecosystem and your own produce in the long-term.
           </Text>
-          <Button style={styles.button} onPress={continueOn}>
+          <Button mode="contained" style={styles.button} onPress={continueOn}>
             Continue to Free Story Mode
           </Button>
           
