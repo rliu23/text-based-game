@@ -246,11 +246,11 @@ export default function GameScreen() {
             </Button>
           )}
 
-          <Button mode="outlined" style={styles.button} onPress={weedByHand}>
+          <Button mode="contained" style={styles.button} onPress={weedByHand}>
             Weed by Hand (2 hrs)
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -267,11 +267,11 @@ export default function GameScreen() {
             Your wheat field is ready to harvest!
           </Text>
 
-          <Button mode="outlined" style={styles.button} onPress={harvestCrops}>
+          <Button mode="contained" style={styles.button} onPress={harvestCrops}>
             Harvest Crops (2 hours)
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -288,14 +288,14 @@ export default function GameScreen() {
             Your wheat field needs to be fertilized. Would you like to fertilize your wheat field with synthetic fertilizers (1 hour, 10 gold) or collect and use cow manure as fertilizer (3 hours)?
           </Text>
 
-          <Button mode="outlined" style={styles.button} onPress={fertilizeCrops}>
+          <Button mode="contained" style={styles.button} onPress={fertilizeCrops}>
             Use Synthetic Fertilizer (1 hour)
           </Button>
-          <Button mode="outlined" style={styles.button} onPress={manureCrops}>
+          <Button mode="contained" style={styles.button} onPress={manureCrops}>
             Collect and Use Manure (3 hours)
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -312,17 +312,17 @@ export default function GameScreen() {
             Your cows need to be fed. Will you feed them your stored wheat, special organic feed (15 gold), or cheap pellets (5 gold)? All choices require 2 hours.
           </Text>
 
-          <Button mode="outlined" style={styles.button} onPress={wheatCows}>
+          <Button mode="contained" style={styles.button} onPress={wheatCows}>
             Feed Using Stored Wheat
           </Button>
-          <Button mode="outlined" style={styles.button} onPress={organicCows}>
+          <Button mode="contained" style={styles.button} onPress={organicCows}>
             Buy and Feed Organic Feed
           </Button>
-          <Button mode="outlined" style={styles.button} onPress={pelletCows}>
+          <Button mode="contained" style={styles.button} onPress={pelletCows}>
             Buy and Feed Pellets
           </Button>
-          <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+          <Button mode="contained" style={styles.button} onPress={handleBackToMenu}>
+            Back to Menu
           </Button>
         </>
       )}
@@ -349,7 +349,7 @@ export default function GameScreen() {
             Buy Pellets
           </Button>
           <Button style={styles.button} onPress={handleBackToMenu}>
-            🔙 Back to Menu
+            Back to Menu
           </Button>
         </>
       )}  
@@ -420,7 +420,7 @@ export default function GameScreen() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Task Completed!</Text>
             <Text style={styles.modalText}>{selectedEntry}</Text>
-            <Button mode="contained" style={styles.modalButton} onPress={closeModal}>
+            <Button mode="contained" style={styles.button} onPress={closeModal}>
               Back to Choices
             </Button>
           </View>
@@ -464,6 +464,7 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 8,
     borderRadius: 10,
+    backgroundColor: '#2e7d32'
   },
   logTitle: {
     marginTop: 30,
