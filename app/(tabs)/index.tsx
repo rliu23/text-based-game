@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { useLocalSearchParams } from 'expo-router';
+import { useEffect } from 'react';
 import { Button, StyleSheet, TextInput, ScrollView, View } from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
@@ -19,7 +21,33 @@ function formatStatValue(value: any) {
 
 
 export default function HomeScreen() {
-  const [stats, setStats] = useState({ cows: 5, wheat: 100, gold: 50, human: 10, hebicide: false });
+  // const [stats, setStats] = useState({ cows: 5, wheat: 100, gold: 50, human: 10, hebicide: false });
+  const { passedValue } = useLocalSearchParams();
+
+  const [stats, setStats] = useState({
+    cows: 5,
+    wheat: 100,
+    gold: 50,
+    human: 10,
+    herbicide: false,
+  });
+
+  useEffect(() => {
+    if (passedValue) {
+      try {
+        const parsedStats = JSON.parse(passedValue as string);
+        setStats(parsedStats);
+      } catch (error) {
+        console.error('Error parsing passed stats:', error);
+      }
+    }
+  }, [passedValue]);
+
+
+
+
+
+  
   const [philosophy, setPhilosophy] = useState('Organic');
   const [response, setResponse] = useState('');
   const [options, setOptions] = useState<string[]>([]);

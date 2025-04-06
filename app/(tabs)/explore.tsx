@@ -130,10 +130,19 @@ export default function GameScreen() {
   };
 
   const continueOn = () => {
-    setStats({ gold: gold, cows: cows, wheatCapacity: wheatCapacity, wheatStorage: wheatStorage, herbicide: hasHerbicide, fertilizer: hasFertilizer, pellets: hasPellets, });
+    const newStats = {
+      gold: gold,
+      cows: cows,
+      wheatCapacity: wheatCapacity,
+      wheatStorage: wheatStorage,
+      herbicide: hasHerbicide,
+      fertilizer: hasFertilizer,
+      pellets: hasPellets,
+    };
+
     router.navigate({
-      pathname: '/index',
-      params: { passedValue: stats },
+      pathname: '/',
+      params: { passedValue: JSON.stringify(newStats) }, // 📦 stringify to safely pass as a param
     });
   };
 
