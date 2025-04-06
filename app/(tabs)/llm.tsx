@@ -31,7 +31,7 @@ export default function HomeScreen() {
     }
   });
 
-  const [philosophy, setPhilosophy] = useState('Organic');
+  const [philosophy, setPhilosophy] = useState('');
   const [response, setResponse] = useState('');
   const [options, setOptions] = useState<string[]>([]);
   const [history, setHistory] = useState<string[]>([]);
