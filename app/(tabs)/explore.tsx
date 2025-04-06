@@ -128,7 +128,7 @@ export default function GameScreen() {
     };
 
     router.navigate({
-      pathname: '/',
+      pathname: '/llm',
       params: { passedValue: JSON.stringify(newStats) }, // 📦 stringify to safely pass as a param
     });
   };
