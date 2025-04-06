@@ -28,7 +28,7 @@ app.post('/generate-event', async (req, res) => {
     Past Choices: ${history.join('; ')}
 
     First, evaluate the player's last decision:
-    - Was it a good or bad choice based on sustainable farming practices and their philosophy?
+    - Was it a good or bad choice based on sustainable farming practices and their philosophy / next step?
     - Write 1-2 sentences describing the consequence (good or bad).
 
     Then, continue the farm story and present two new decisions.
